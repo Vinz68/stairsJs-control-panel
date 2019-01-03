@@ -6,6 +6,10 @@ This client program (stairsJs-control-panel) gives the status and control of thi
 Usage
 npm install, to install all needed packages.
 npm start, will startup the program and will listen on port 3000
-Use a browser to access the program on: http://localhost:3000 or http(s)://[your ip or computername]:3000
+Use a browser to access the program on: 
+http://localhost:3000 
+or 
+http(s)://[your ip or computername]:3000
+
 
 
