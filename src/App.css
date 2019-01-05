@@ -20,7 +20,8 @@
 }
 
 .App-title {
-  font-size: 1.4em;
+  font-size: 1.2em;
+  font-weight: bold;
 }
 
 .App-github {
@@ -32,9 +33,20 @@
   display: block;
 }
 
-.App-text {
-  font-size: calc(8px + 1vmin);
+.App-caption {
+  font-size: 1.2em;
+  font-weight: bold;
 }
+
+.App-panel {
+  border: thin solid black;
+}
+
+.App-text {
+  font-size: 1.2em;
+  font-weight: 550;   /* Almost bold, bit less */
+}
+
 
 
 @keyframes App-logo-spin {
