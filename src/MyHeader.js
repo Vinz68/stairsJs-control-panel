@@ -9,7 +9,7 @@ const MyHeader = function (props) {
         <header className="App-header">
             <div className="container">
                 <div className="row no-gutters">
-                    <div class="col-2">
+                    <div className="col-2">
                         <img src={logo} className="App-logo" align="right" alt="logo" />
                     </div>
                     <div className="col">

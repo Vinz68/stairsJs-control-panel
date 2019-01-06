@@ -4,16 +4,16 @@ import './App.css';                           // used style sheet
 
 const ImageWithText = function (props) {
     return (
-        <div class="container">
-            <div class="row no-gutters">
-                <div class="col-2">
+        <div className="container">
+            <div className="row no-gutters">
+                <div className="col-2">
                 </div>
-                <div class="col">
-                    <div class="row no-glutters">
-                        <div class="col-2">
+                <div className="col">
+                    <div className="row no-glutters">
+                        <div className="col-2">
                             <img src={props.image} alt="imageWithInfo" height='40' width='40' align="left" ></img>
                         </div>
-                        <div class="col">
+                        <div className="col">
                             <p className="App-text">{props.value}</p>
                         </div>
                     </div>

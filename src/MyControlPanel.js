@@ -3,15 +3,22 @@ import axios from 'axios'                       // REST-API support, see https:/
 import MyCaption from './MyCaption'             // Caption on one line/row
 import ImageWithText from './ImageWithText'     // Image with text on one line/row
 import Toggle from 'react-toggle'               // Toggle button, see http://aaronshaf.github.io/react-toggle/
+import Select from 'react-select'               // Select, dropdown, see https://www.npmjs.com/package/react-select
+
 import "react-toggle/style.css"
 import './App.css'                              // used style sheet
 
 // Used Media files
-import currentStateIcon from './media/current-state128.png';
+import currentStateOffIcon from './media/currentStateOff128.png';
+import currentStateOnIcon from './media/currentStateOn128.png';
+import currentStateAutoIcon from './media/currentStateAuto128.png';
+
 
 // REST API endpoint - to get the used sunrise and sunset times
 const stairsStatusAPI = 'http://stairsledlight:9000/status';
-//const stairsControlAPI = 'http://stairsledlight:9000/control';
+const stairsControlAPI = 'http://stairsledlight:9000/control';
+
+var currentStateIcon = currentStateOffIcon;
 
 
 class Introspection extends React.Component {
@@ -32,12 +39,10 @@ class MyControlPanel extends React.Component {
             stairsStatus: [],
             isLoadingStatus: false,
             error: null,
-            status: false,
-            disableDaylight: false,
+            onOffState: false,
+            disableDuringDaylight: false,
 
-            //            stairsControl: [],
-            //            isLoadingControl: false,
-            //            errorControl: null,
+            selectedOption: null,
         };
     }
 
@@ -45,10 +50,26 @@ class MyControlPanel extends React.Component {
         this.setState({ isLoadingStatus: true });
 
         axios.get(stairsStatusAPI)
-            .then(result => this.setState({
-                stairsStatus: result.data,
-                isLoadingStatus: false
-            }))
+            .then(result => {
+
+                this.setState({
+                    stairsStatus: result.data,
+                    isLoadingStatus: false
+                });
+
+                if (result.data.disableDuringDaylight) {
+                    this.setState({
+                        disableDuringDaylight: result.data.disableDuringDaylight
+                    });
+                }
+
+                if ((result.data.currentState) && (result.data.currentState > 1)) {
+                    this.setState({
+                        onOffState: true
+                    });
+                }
+
+            })
             .catch(error => this.setState({
                 error,
                 isLoadingStatus: false
@@ -59,39 +80,94 @@ class MyControlPanel extends React.Component {
     handleStatusChange = () => {
         this.setState(prevState => {
             return {
-                status: !prevState.status
+                onOffState: !prevState.onOffState
             };
         });
     };
 
     handleDaylightChange = () => {
+
         this.setState(prevState => {
             return {
-                disableDaylight: !prevState.disableDaylight
+                disableDuringDaylight: !prevState.disableDuringDaylight
             };
         });
     };
 
+    handleOptionChange = (selectedOption) => {
+
+        this.setState({ selectedOption });
+    }
+
+    handleClick = event => {
+        event.preventDefault();
+    
+        if (this.state.selectedOption.value) {
+    
+            axios.post(stairsControlAPI, {
+                requestedState: this.state.selectedOption.value ,
+                version: '0.1'
+              })
+              .then(response => {
+                console.log(response);
+                console.log(response.data);
+
+                this.setState({
+                    selectedOption: null
+                });
+            })
+            .catch(error => {
+                console.log(error);
+            });            
+        }
+    }
+ 
 
 
     render() {
 
-        const { stairsStatus, isLoadingStatus, error, status, disableDaylight } = this.state;
+        var { stairsStatus, isLoadingStatus, error, onOffState, disableDuringDaylight, selectedOption } = this.state;
 
         var displayState = "";
-        var currentStateValue = "";
+        var currentStateTextValue = "";
+        var options = [
+            { value: 'Loading', label: '...loading from server, plz wait..' }
+        ];
+        var selectedValue = -1;
+        var btnDisabled = true;
 
         if (error) {
             displayState = this.state.error.message;
         }
         else if (isLoadingStatus) {
-            displayState = "<p>Loading ...</p>";
+            displayState = "Loading ...";
         }
-        else if (stairsStatus.currentState) {
-            displayState = stairsStatus.currentState;
-        }
+        else if (stairsStatus.currentStateText) {
+            displayState = stairsStatus.currentStateText;
 
-        currentStateValue = displayState;
+            // Automatic Mode ?
+            if ((stairsStatus.currentState == 11 ) || (stairsStatus.currentState == 12))  {
+                currentStateIcon = currentStateAutoIcon;
+            }
+            // Always On mode ?
+            else if (stairsStatus.currentState >= 31) {
+                currentStateIcon = currentStateOnIcon;
+            }
+            else {
+                // Default Off (also used for testing)
+                currentStateIcon = currentStateOffIcon;
+            }
+
+            options = stairsStatus.currentStateOptions;
+        }
+        currentStateTextValue = displayState;
+
+        if (selectedOption) {
+            selectedValue = selectedOption.value;
+
+            if (selectedValue > 0)
+                btnDisabled = false;
+        }
 
 
         return (
@@ -100,21 +176,22 @@ class MyControlPanel extends React.Component {
                     value="Control panel" />
                 <ImageWithText
                     image={currentStateIcon}
-                    value={currentStateValue} />
+                    value={currentStateTextValue} />
 
-                <div class="container">
-                    <div class="row no-gutters">
-                        <div class="col-2">
+                <div className="container">
+                    <div className="row no-gutters">
+                        <div className="col-2">
                         </div>
-                        <div class="col">
-                            <div class="row no-glutters">
-                                <div class="col-2">
+                        <div className="col">
+                            <div className="row no-glutters">
+                                <div className="col-2">
                                     <Toggle
-                                        defaultChecked={status}
-                                        onChange={this.handleStatusChange} />
+                                        onChange={this.handleStatusChange}
+                                        checked={onOffState}
+                                        name='onOffState' />
                                 </div>
-                                <div class="col">
-                                    <p className="App-text">Activate stairs program.</p>
+                                <div className="col">
+                                    <p className="App-text">Enable stairs program.</p>
                                 </div>
                             </div>
                         </div>
@@ -124,46 +201,114 @@ class MyControlPanel extends React.Component {
                 </div>
 
 
-                <div class="container">
-                    <div class="row no-gutters">
-                        <div class="col-2">
+                <div className="container">
+                    <div className="row no-gutters">
+                        <div className="col-2">
                         </div>
-                        <div class="col">
-                            <div class="row no-glutters">
-                                <div class="col-2">
+                        <div className="col">
+                            <div className="row no-glutters">
+                                <div className="col-2">
                                     <Toggle
-                                        defaultChecked={disableDaylight}
-                                        onChange={this.handleDaylightChange} />
+                                        onChange={this.handleDaylightChange}
+                                        checked={disableDuringDaylight}
+                                        name='disableDuringDaylight'
+                                    />
                                 </div>
-                                <div class="col">
-                                    <p className="App-text">Disable light during daylight.</p>
-                                </div>
-                            </div>
+                                <div className="col">
+                                    <p className="App-text">Disable stair light during daylight.</p>
+                                </div>                                
+                             </div>
                         </div>
                         <div className="col-2" >
                         </div>
                     </div>
-                </div> 
+                </div>
 
-                <div class="container">
-                    <div class="row no-gutters">
-                    </div>
-                    <div class="row no-gutters">
-                        <div class="col-2">
+                <div className="container">
+                    <div className="row no-gutters">
+                        <div className="col-2">
                         </div>
-                        <div class="col">
-                            <div class="row no-glutters">
-                                <div class="col-2">
-                                </div>
-                                <div class="col">
-                                    <Introspection />
-                                </div>
+                        <div className="col">
+
+                        <div className="row no-glutters">
+                                <div className="col">
+                                    <p></p>
+                                </div> 
                             </div>
+
+                            <div className="row no-glutters">
+                                <div className="col">
+                                    <p className="App-text">Select the new requested program mode:</p>
+                                </div> 
+                            </div>
+
+                            <div className="row no-glutters">
+                                <div className="col">
+                                    <Select
+                                        value={selectedOption}
+                                        onChange={this.handleOptionChange}
+                                        options={options}
+                                    />
+                                </div> 
+                            </div>
+
+
+                            <div className="row no-glutters">
+                                <div className="col">
+                                    <button className="App-submit-button" 
+                                        type="button" 
+                                        disabled={btnDisabled}
+                                        onClick={this.handleClick} 
+                                        >Submit new selected program state.</button>   
+
+                                </div> 
+                            </div>
+
+
+                            <div className="row no-glutters">
+                                <div className="col">
+                                    <p></p>                                
+                                </div> 
+                            </div>
+
+                            <div className="row no-glutters">
+                                <div className="col">
+                                    <p></p>                                
+                                </div> 
+                            </div>
+
+                            <div className="row no-glutters">
+                                <div className="col">
+                                    <p className="App-text">Current State:</p>
+                                    <p>{stairsStatus.currentState}</p>
+                                </div> 
+                            </div>   
+
+                            <div className="row no-glutters">
+                                <div className="col">
+                                    <p className="App-text">Current Option:</p>
+                                    <p>{selectedValue}</p>
+                                </div> 
+                            </div>                             
+
+                            <div className="row no-glutters">
+                                <div className="col">
+                                    <p></p>                                
+                                </div> 
+                            </div>
+
+
+                            <div className="row no-glutters">
+                                <div className="col">
+                                    <Introspection />
+                                </div> 
+                            </div>                                                               
+
                         </div>
                         <div className="col-2" >
                         </div>
                     </div>
-                </div>                                
+                </div>                                                   
 
             </div>
         );
