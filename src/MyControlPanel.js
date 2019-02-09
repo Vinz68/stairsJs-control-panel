@@ -11,15 +11,14 @@ import './App.css'                              // used style sheet
 // Used Media files
 import currentStateOffIcon from './media/currentStateOff128.png';
 import currentStateOnIcon from './media/currentStateOn128.png';
+import currentStateOnDark from './media/currentStateOnDark128.png';
 import currentStateAutoIcon from './media/currentStateAuto128.png';
 
-
-// REST API endpoint - to get the used sunrise and sunset times
-const stairsStatusAPI = 'http://stairsledlight:9000/status';
-const stairsControlAPI = 'http://stairsledlight:9000/control';
+// REST API endpoints 
+const stairsStatusAPI = 'http://stairsledlight:9000/status';    // status of StairsJS program (like its mode/state)
+const stairsControlAPI = 'http://stairsledlight:9000/control';  // remote for the StairsJS program (like swith mode/state)
 
 var currentStateIcon = currentStateOffIcon;
-
 
 class Introspection extends React.Component {
     render() {
@@ -47,33 +46,7 @@ class MyControlPanel extends React.Component {
     }
 
     componentDidMount() {
-        this.setState({ isLoadingStatus: true });
-
-        axios.get(stairsStatusAPI)
-            .then(result => {
-
-                this.setState({
-                    stairsStatus: result.data,
-                    isLoadingStatus: false
-                });
-
-                if (result.data.disableDuringDaylight) {
-                    this.setState({
-                        disableDuringDaylight: result.data.disableDuringDaylight
-                    });
-                }
-
-                if ((result.data.currentState) && (result.data.currentState > 1)) {
-                    this.setState({
-                        onOffState: true
-                    });
-                }
-
-            })
-            .catch(error => this.setState({
-                error,
-                isLoadingStatus: false
-            }));
+        this.getStatus();
     }
 
 
@@ -115,6 +88,9 @@ class MyControlPanel extends React.Component {
                 this.setState({
                     selectedOption: null
                 });
+
+                // refresh status panel (get new program mode/state)
+                this.getStatus();
             })
             .catch(error => {
                 console.log(error);
@@ -123,6 +99,31 @@ class MyControlPanel extends React.Component {
     }
  
 
+
+    getStatus() {
+        this.setState({ isLoadingStatus: true });
+        axios.get(stairsStatusAPI)
+            .then(result => {
+                this.setState({
+                    stairsStatus: result.data,
+                    isLoadingStatus: false
+                });
+                if (result.data.disableDuringDaylight) {
+                    this.setState({
+                        disableDuringDaylight: result.data.disableDuringDaylight
+                    });
+                }
+                if ((result.data.currentState) && (result.data.currentState > 1)) {
+                    this.setState({
+                        onOffState: true
+                    });
+                }
+            })
+            .catch(error => this.setState({
+                error,
+                isLoadingStatus: false
+            }));
+    }
 
     render() {
 
@@ -152,6 +153,10 @@ class MyControlPanel extends React.Component {
             // Always On mode ?
             else if (stairsStatus.currentState >= 31) {
                 currentStateIcon = currentStateOnIcon;
+            }
+            // On when dark mode ?
+            else if (stairsStatus.currentState >= 32) {
+                currentStateIcon = currentStateOnDark;
             }
             else {
                 // Default Off (also used for testing)
