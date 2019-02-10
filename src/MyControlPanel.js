@@ -11,14 +11,13 @@ import './App.css'                              // used style sheet
 // Used Media files
 import currentStateOffIcon from './media/currentStateOff128.png';
 import currentStateOnIcon from './media/currentStateOn128.png';
-import currentStateOnDark from './media/currentStateOnDark128.png';
+import currentStateOnDarkIcon from './media/currentStateOnDark128.png';
 import currentStateAutoIcon from './media/currentStateAuto128.png';
 
 // REST API endpoints 
 const stairsStatusAPI = 'http://stairsledlight:9000/status';    // status of StairsJS program (like its mode/state)
 const stairsControlAPI = 'http://stairsledlight:9000/control';  // remote for the StairsJS program (like swith mode/state)
 
-var currentStateIcon = currentStateOffIcon;
 
 class Introspection extends React.Component {
     render() {
@@ -59,7 +58,6 @@ class MyControlPanel extends React.Component {
     };
 
     handleDaylightChange = () => {
-
         this.setState(prevState => {
             return {
                 disableDuringDaylight: !prevState.disableDuringDaylight
@@ -68,7 +66,6 @@ class MyControlPanel extends React.Component {
     };
 
     handleOptionChange = (selectedOption) => {
-
         this.setState({ selectedOption });
     }
 
@@ -131,6 +128,8 @@ class MyControlPanel extends React.Component {
 
         var displayState = "";
         var currentStateTextValue = "";
+        var currentStateIcon = currentStateOffIcon;
+
         var options = [
             { value: 'Loading', label: '...loading from server, plz wait..' }
         ];
@@ -147,16 +146,19 @@ class MyControlPanel extends React.Component {
             displayState = stairsStatus.currentStateText;
 
             // Automatic Mode ?
-            if ((stairsStatus.currentState == 11 ) || (stairsStatus.currentState == 12))  {
+            if (stairsStatus.currentState === '11' )   {
+                currentStateIcon = currentStateAutoIcon;
+            } 
+            else if (stairsStatus.currentState === '12') {
                 currentStateIcon = currentStateAutoIcon;
             }
             // Always On mode ?
-            else if (stairsStatus.currentState >= 31) {
+            else if (stairsStatus.currentState === '31') {
                 currentStateIcon = currentStateOnIcon;
             }
             // On when dark mode ?
-            else if (stairsStatus.currentState >= 32) {
-                currentStateIcon = currentStateOnDark;
+            else if (stairsStatus.currentState === '32') {
+                currentStateIcon = currentStateOnDarkIcon;
             }
             else {
                 // Default Off (also used for testing)
@@ -196,7 +198,7 @@ class MyControlPanel extends React.Component {
                                         name='onOffState' />
                                 </div>
                                 <div className="col">
-                                    <p className="App-text">Enable stairs program.</p>
+                                    <p className="App-text">Enabled.</p>
                                 </div>
                             </div>
                         </div>
@@ -220,7 +222,7 @@ class MyControlPanel extends React.Component {
                                     />
                                 </div>
                                 <div className="col">
-                                    <p className="App-text">Disable stair light during daylight.</p>
+                                    <p className="App-text">Disable during daylight.</p>
                                 </div>                                
                              </div>
                         </div>
@@ -243,7 +245,7 @@ class MyControlPanel extends React.Component {
 
                             <div className="row no-glutters">
                                 <div className="col">
-                                    <p className="App-text">Select the new requested program mode:</p>
+                                    <p className="App-text">Select program mode:</p>
                                 </div> 
                             </div>
 
@@ -264,7 +266,7 @@ class MyControlPanel extends React.Component {
                                         type="button" 
                                         disabled={btnDisabled}
                                         onClick={this.handleClick} 
-                                        >Submit new selected program state.</button>   
+                                        >Submit mode.</button>   
 
                                 </div> 
                             </div>
@@ -276,25 +278,7 @@ class MyControlPanel extends React.Component {
                                 </div> 
                             </div>
 
-                            <div className="row no-glutters">
-                                <div className="col">
-                                    <p></p>                                
-                                </div> 
-                            </div>
-
-                            <div className="row no-glutters">
-                                <div className="col">
-                                    <p className="App-text">Current State:</p>
-                                    <p>{stairsStatus.currentState}</p>
-                                </div> 
-                            </div>   
-
-                            <div className="row no-glutters">
-                                <div className="col">
-                                    <p className="App-text">Current Option:</p>
-                                    <p>{selectedValue}</p>
-                                </div> 
-                            </div>                             
+                        
 
                             <div className="row no-glutters">
                                 <div className="col">
