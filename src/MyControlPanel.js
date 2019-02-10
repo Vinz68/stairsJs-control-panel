@@ -148,6 +148,7 @@ class MyControlPanel extends React.Component {
             // Automatic Mode ?
             if (stairsStatus.currentState === '11' )   {
                 currentStateIcon = currentStateAutoIcon;
+
             } 
             else if (stairsStatus.currentState === '12') {
                 currentStateIcon = currentStateAutoIcon;
