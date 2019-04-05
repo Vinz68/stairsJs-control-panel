@@ -9,6 +9,7 @@ Control: There program has different modes which can be set:
 
 | Mode                             | Description                                      | 
 |:--------------------------------:|:------------------------------------------------:|
+|  | |  |
 | 'Always off.' | Stairs Lights always turned off |
 | | |
 | 'Automatic, by PIR.' | When PIR detects a person, turn on stair lights. |          
