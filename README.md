@@ -21,7 +21,7 @@ Control: There program has different modes which can be set:
 | 'Always on when dark.' | When Dark, Stairs Lights always turned on|
 | | |
 |  'Test1 activated.' | Test mode, for future usage. |
-|:--------------------------------:| ------------------------------------------------:|
+
  
 
 ## Screenshot
