@@ -2,7 +2,20 @@
 It is a front-end (GUI client) for the automatic led-light server program of my stairs, which can be found here: https://github.com/Vinz68/stairsJs.
 The server program (stairsJs repository) controls the led-strips on the stairs automatically
 based on the current sunset and sunrise times and using 2 passive infra red (PIR) sensors to detect the people who want to go up or down.
+
 This client program (stairsJs-control-panel) gives the status and control of this stairs program.
+Status: Current time, Sunrise time, Sunset time and the current state/mode and 2 settings.
+Control: There program has different modes which can be set:
+| Mode                             | Description                                      | 
+|:--------------------------------:| ------------------------------------------------:|
+| 'Always off.' | Stairs Lights always turned off |
+| 'Automatic, by PIR.' | When PIR detects a person, turn on stair lights. |          
+| 'Automatic, by PIR when dark.' | When Dark and PIR detects a person, turn on lights.|
+| 'Always on.' | Stairs Lights always turned on |
+| 'Always on when dark.' | When Dark, Stairs Lights always turned on|
+|  'Test1 activated.' | Test mode, for future usage. |
+|:--------------------------------:| ------------------------------------------------:|
+ 
 
 ## Screenshot
 ![stairsjs-control-panel](src/media/screenshot.jpg) 
@@ -37,15 +50,6 @@ Your app is ready to be deployed!
 
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
 ## Learn More
 
