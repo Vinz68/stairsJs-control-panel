@@ -6,13 +6,19 @@ based on the current sunset and sunrise times and using 2 passive infra red (PIR
 This client program (stairsJs-control-panel) gives the status and control of this stairs program.
 Status: Current time, Sunrise time, Sunset time and the current state/mode and 2 settings.
 Control: There program has different modes which can be set:
+
 | Mode                             | Description                                      | 
-|:--------------------------------:| ------------------------------------------------:|
+|:--------------------------------:|:------------------------------------------------:|
 | 'Always off.' | Stairs Lights always turned off |
+| | |
 | 'Automatic, by PIR.' | When PIR detects a person, turn on stair lights. |          
+| | |
 | 'Automatic, by PIR when dark.' | When Dark and PIR detects a person, turn on lights.|
+| | |
 | 'Always on.' | Stairs Lights always turned on |
+| | |
 | 'Always on when dark.' | When Dark, Stairs Lights always turned on|
+| | |
 |  'Test1 activated.' | Test mode, for future usage. |
 |:--------------------------------:| ------------------------------------------------:|
  
