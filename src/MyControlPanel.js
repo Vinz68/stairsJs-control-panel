@@ -76,7 +76,7 @@ class MyControlPanel extends React.Component {
     
             axios.post(stairsControlAPI, {
                 requestedState: this.state.selectedOption.value ,
-                version: '0.1'
+                version: '0.2'
               })
               .then(response => {
                 console.log(response);
